@@ -26,6 +26,9 @@ This project utilize Astronomer, a managed service that simplifies Apache Airflo
    - Processes and test the data models located in the models/marts directory to create fact and dimension tables
    - Processes data models located in the models/report directory to generate final reporting tables
 
+6. **Visualize the data with Metabase**:  
+   Create simple visualization using Metabase
+
 ## Airflow DAGs
 
 ![Dag Flow](images/airflow_simple.png "YouTube Pipeline Dag")
@@ -82,8 +85,8 @@ Ensure you have the following configured:
 
 ## DBT Documentations
 
-![dbt_docs](images/dbt_docs_2 "dbt docs")
+![dbt_docs](images/dbt_docs_2.png "dbt docs")
 
 ## DBT Lineage
 
-![dbt_lineage](images/dbt_lineage_2 "dbt lineage")
+![dbt_lineage](images/dbt_lineage_2.png "dbt lineage")
