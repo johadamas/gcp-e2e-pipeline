@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: youtube_tf
+    database: testproject-bq-02
+    schema: youtube_tf
+    tables:
+      - name: youtube_raw

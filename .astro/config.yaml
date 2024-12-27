@@ -1,0 +1,8 @@
+project:
+    name: de-project-3
+
+webserver:
+    port: 8089
+    
+postgres:
+    port: 5439

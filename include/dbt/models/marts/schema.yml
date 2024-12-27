@@ -1,0 +1,49 @@
+models:
+  - name: metrics
+    description: "Fact table containing video metrics"
+    columns:
+      - name: video_id
+        description: "Foreign key to videos"
+        data_tests:                    # Updated to data_tests
+          - relationships:
+              to: ref('videos')      # Dimension table reference
+              field: video_id            # Primary key in videos
+      - name: date_id
+        description: "Foreign key to dim_date"
+        data_tests:                     # Updated to data_tests
+          - relationships:
+              to: ref('date')
+              field: date_id             # Primary key in date
+      - name: channel_id
+        description: "Foreign key to channel"
+        data_tests:                     # Updated to data_tests
+          - relationships:
+              to: ref('channel')
+              field: channel_id          # Primary key in dim_channels
+
+  - name: videos
+    description: "Dimension table for videos"
+    columns:
+      - name: video_id
+        description: "Primary key for videos"
+        data_tests:                    # Updated to data_tests
+          - unique                       # Ensures video_id is unique in dim_videos
+          - not_null                     # Ensures video_id is not null
+
+  - name: date
+    description: "Dimension table for dates"
+    columns:
+      - name: date_id
+        description: "Primary key for dates"
+        data_tests:                     # Updated to data_tests
+          - unique
+          - not_null
+
+  - name: channel
+    description: "Dimension table for channels"
+    columns:
+      - name: channel_id
+        description: "Primary key for channels"
+        data_tests:                     # Updated to data_tests
+          - unique
+          - not_null

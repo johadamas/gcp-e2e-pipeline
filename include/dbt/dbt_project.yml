@@ -1,0 +1,7 @@
+name: 'youtube_tf'
+
+profile: 'youtube_tf'
+
+models:
+  youtube_tf:
+    materialized: table
