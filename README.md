@@ -6,7 +6,7 @@ This project implements an Airflow DAG to fetch YouTube channel and video data u
 
 ![Pipeline Flow](/images/pipeline_architecture.png "Project Architecture")
 
-This project utilize Astronomer, a managed service that simplifies Apache Airflow management and contained all of the service inside a docker container
+This project utilizes Astronomer, a managed service that simplifies Apache Airflow management, and runs all services inside Docker containers.
 
 ### Tasks Run
 
@@ -55,12 +55,14 @@ get_youtube_data -> terraform_tasks -> upload_to_gcs -> load_data_to_bq -> trans
 5. **transform_marts**: 
    Transforms the raw data into marts with dbt
 
-6. **transform_marts**:  
+6. **transform_report**:  
    Generates final report tables from marts
 
 ## Metabase Dashboard
 
 ![Dashboard](images/dashboard.gif "YT Metrics Dashboard")
+
+The Metabase dashboard provides insights into key metrics such as channel performance, video views, and engagement trends.
 
 ## Features
 
@@ -87,6 +89,10 @@ Ensure you have the following configured:
 
 ![dbt_docs](images/dbt_docs_2.png "dbt docs")
 
+Use the dbt docs site to explore models, sources, and transformations in detail.
+
 ## DBT Lineage
 
 ![dbt_lineage](images/dbt_lineage_2.png "dbt lineage")
+
+The lineage graph provides a visual overview of dependencies between raw data, marts, and reporting tables.
