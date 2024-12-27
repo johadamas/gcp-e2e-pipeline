@@ -34,6 +34,7 @@ This project utilize Astronomer, a managed service that simplifies Apache Airflo
 
 ```plaintext
 get_youtube_data -> terraform_tasks -> upload_to_gcs -> load_data_to_bq -> transform_marts -> transform_report
+```
 
 1. **get_youtube_data**:  
    Fetches channel statistics and video details, filters the data, and saves it to a local CSV file temporarily
