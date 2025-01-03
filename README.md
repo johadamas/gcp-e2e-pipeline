@@ -1,4 +1,4 @@
-# YouTube Data Pipeline with Airflow
+# YouTube ELT Data Pipeline with GCP and Airflow
 
 This project implements an Airflow DAG to fetch YouTube channel and video data using the YouTube Data API, transform it, and load it into Google Cloud Storage (GCS) and BigQuery. The DAG also includes Terraform tasks for infrastructure setup and dbt transformations for marts and reports model.
 
