@@ -60,7 +60,7 @@ get_youtube_data -> terraform_tasks -> upload_to_gcs -> load_data_to_bq -> trans
 
 ## Metabase Dashboard
 
-![Dashboard](images/dashboard.gif "YT Metrics Dashboard")
+![Dashboard](images/dashboard2.gif "YT Metrics Dashboard")
 
 The Metabase dashboard provides insights into key metrics such as channel performance, video views, and engagement trends.
 
