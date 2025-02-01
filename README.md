@@ -314,3 +314,6 @@ The ELT pipeline automates data extraction and transformation using a single Air
 - Expand dbt transformations to support advanced metrics
 - Implement Change Data Capture (CDC) for real-time updates
 - Add Terraform outputs to clarify expected results after provisioning
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
