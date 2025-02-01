@@ -1,5 +1,6 @@
-# YouTube Data Pipeline with Airflow
+# YouTube ELT Data Pipeline with GCP and Airflow
 
+<<<<<<< HEAD
 ## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Key Features](#key-features)
@@ -9,6 +10,9 @@
 6. [Metabase Dashboard](#metabase-dashboard)
 7. [Project Summary](#project-summary)
 8. [Future Enhancements](#future-enhancements)
+=======
+This project implements an Airflow DAG to fetch YouTube channel and video data using the YouTube Data API, load it into Google Cloud Storage (GCS) and BigQuery and then transform it using dbt. The DAG also includes Terraform tasks for infrastructure setup and dbt transformations for marts and reports model.
+>>>>>>> origin/main
 
 ## Project Overview
 This ELT project extracts YouTube data using the YouTube API, uploads it to Google Cloud Storage (GCS), and loads it into BigQuery. Terraform is used to provision the GCP infrastructure (GCS bucket and BigQuery dataset/table). dbt transforms the raw data into marts (fact and dimension tables) and generates final reporting tables. Metabase visualizes insights from the transformed data, and Apache Airflow orchestrates the entire pipeline
@@ -49,6 +53,31 @@ This section contains the main functionalities and capabilities of ELT Pipeline:
 
    - Reduces manual intervention and ensures consistent pipeline execution
 
+<<<<<<< HEAD
+=======
+4. **load_to_bigquery**:  
+   Loads the raw data from GCS into a BigQuery table.
+
+5. **transform_marts**: 
+   Transforms the raw data into marts with dbt
+
+6. **transform_report**:  
+   Generates final report tables from marts
+
+## Metabase Dashboard
+
+![Dashboard](images/dashboard2.gif "YT Metrics Dashboard")
+
+The Metabase dashboard provides insights into key metrics such as channel performance, video views, and engagement trends.
+
+## Features
+
+- Fetch YouTube channel statistics and video details using the YouTube Data API.
+- Save the data as a CSV file locally.
+- Upload the CSV file to Google Cloud Storage (GCS).
+- Load the data from GCS into BigQuery.
+- Perform transformations using dbt to create marts and reports.
+>>>>>>> origin/main
 
 ## Prerequisites
 1. **GCP Subscriptions**
@@ -73,6 +102,7 @@ This section contains the main functionalities and capabilities of ELT Pipeline:
 6. **Terraform**
    - Terraform is used for Infrastructure as Code (IaC) to provision GCP resources programmatically. It is installed inside the Docker container (via the `Dockerfile`) for deployment automation
 
+<<<<<<< HEAD
 7. **dbt Core**
    - dbt Core is used for data transformations. It processes raw data into marts (fact and dimension tables) and generates final reporting tables. The dbt project is configured within the pipeline and is installed inside the Docker container (via the `Dockerfile`)
 
@@ -315,3 +345,6 @@ The ELT pipeline automates data extraction and transformation using a single Air
 - Expand dbt transformations to support advanced metrics
 - Implement Change Data Capture (CDC) for real-time updates
 - Add Terraform outputs to clarify expected results after provisioning
+=======
+The lineage graph provides a visual overview of dependencies between raw data, marts, and reporting tables.
+>>>>>>> origin/main
