@@ -305,7 +305,7 @@ Follow these steps to quickly set up and run the YouTube Data Pipeline:
 
    - Data Extracted On: December 18, 2024
 
-## Project Summary
+## Conclusion
 The ELT pipeline automates data extraction and transformation using a single Airflow DAG, with cloud resources (GCS and BigQuery) provisioned via Terraform. However, the GCP project itself must be manually created before deployment. Additionally, dbt transformations run [inside Docker / locally], requiring appropriate dependencies inside the container if using Docker. While the pipeline performs well, there is still room for improvement
 
 ## Future Enhancements
