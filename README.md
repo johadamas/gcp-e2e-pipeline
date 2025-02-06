@@ -7,7 +7,7 @@
 4. [Quick Start](#quick-start)
 5. [ELT Pipeline Run](#elt-pipeline-run)
 6. [Metabase Dashboard](#metabase-dashboard)
-7. [Project Summary](#project-summary)
+7. [Conclusion](#conclusion)
 8. [Future Enhancements](#future-enhancements)
 
 ## Project Overview
