@@ -7,7 +7,7 @@
 4. [Quick Start](#quick-start)
 5. [ELT Pipeline Run](#elt-pipeline-run)
 6. [Metabase Dashboard](#metabase-dashboard)
-7. [Project Summary](#project-summary)
+7. [Conclusion](#conclusion)
 8. [Future Enhancements](#future-enhancements)
 
 ## Project Overview
@@ -305,7 +305,7 @@ Follow these steps to quickly set up and run the YouTube Data Pipeline:
 
    - Data Extracted On: December 18, 2024
 
-## Project Summary
+## Conclusion
 The ELT pipeline automates data extraction and transformation using a single Airflow DAG, with cloud resources (GCS and BigQuery) provisioned via Terraform. However, the GCP project itself must be manually created before deployment. Additionally, dbt transformations run [inside Docker / locally], requiring appropriate dependencies inside the container if using Docker. While the pipeline performs well, there is still room for improvement
 
 ## Future Enhancements
@@ -314,3 +314,6 @@ The ELT pipeline automates data extraction and transformation using a single Air
 - Expand dbt transformations to support advanced metrics
 - Implement Change Data Capture (CDC) for real-time updates
 - Add Terraform outputs to clarify expected results after provisioning
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
