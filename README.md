@@ -257,7 +257,7 @@ Follow these steps to quickly set up and run the YouTube Data Pipeline:
 
          ![Dashboard](images/metabase_raw.gif "YT Metrics Dashboard")
 
-         *Note: The dashboard is mainly consist of 3 pages, which is `overview`, `engagement` and `revenue`*
+         *Note: The visuals in this dashboard are not solely based on the `reports` model from the dbt transformation. Some were created using custom SQL queries written directly in Metabase. You can find all the queries [here](include/metabase_query.txt).*
 
 2. **Page Breakdown**
 - **A. Overview**

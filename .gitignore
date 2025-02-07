@@ -33,3 +33,7 @@ include/metabase-data/metabase.db/*.trace.db
 # dbt query model backups
 BACKUPP.txt
 BACKUPP2.txt
+
+# ferf
+test_dag_example.py
+tests/dags/test_dag_example.py

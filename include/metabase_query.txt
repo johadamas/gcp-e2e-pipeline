@@ -1,0 +1,606 @@
+# Average Comments Per Video
+WITH categorized_videos AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        dv.video_id,
+        dv.video_title,
+        f.view_count,
+        f.like_count,
+        f.comment_count,
+        CASE
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 < 5 THEN 'Short'
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 BETWEEN 5 AND 20 THEN 'Medium'
+            ELSE 'Long'
+        END AS duration_category
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.videos dv ON f.video_id = dv.video_id
+)
+
+SELECT
+    channel_id,
+    channel_name,
+    duration_category,
+    COUNT(video_id) AS total_videos,
+    SUM(view_count) AS total_views,
+    SUM(like_count) AS total_likes,
+    SUM(comment_count) AS total_comments,
+    AVG(view_count) AS avg_views_per_video,
+    AVG(like_count) AS avg_likes_per_video,
+    AVG(comment_count) AS avg_comments_per_video
+FROM categorized_videos
+GROUP BY channel_id, channel_name, duration_category
+ORDER BY channel_name, duration_category
+
+---
+
+# Average Engagement Rates
+WITH engagement_metrics AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        f.video_id,
+        f.view_count,
+        f.like_count,
+        f.comment_count,
+        CAST(f.date_id AS DATE) AS date_id,  -- Cast to DATE for filtering
+        CASE 
+            WHEN f.view_count > 0 THEN (f.like_count + f.comment_count) / f.view_count
+            ELSE 0  -- Handle videos with zero views to avoid division by zero
+        END AS engagement_rate
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    WHERE 
+        DATE_TRUNC(CAST(f.date_id AS DATE), MONTH) < DATE_TRUNC(CURRENT_DATE(), MONTH)  -- Exclude videos from the current month
+        AND CAST(f.date_id AS DATE) >= DATE('2019-01-01')  -- Only include videos from 01/01/2019 onwards
+),
+
+average_engagement_by_channel AS (
+    SELECT
+        channel_id,
+        channel_name,
+        AVG(engagement_rate) AS avg_engagement_rate
+    FROM engagement_metrics
+    GROUP BY channel_id, channel_name
+)
+
+SELECT *
+FROM average_engagement_by_channel
+ORDER BY avg_engagement_rate DESC
+
+---
+
+# Average Likes Per Video
+WITH categorized_videos AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        dv.video_id,
+        dv.video_title,
+        f.view_count,
+        f.like_count,
+        f.comment_count,
+        CASE
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 < 5 THEN 'Short'
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 BETWEEN 5 AND 20 THEN 'Medium'
+            ELSE 'Long'
+        END AS duration_category
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.videos dv ON f.video_id = dv.video_id
+)
+
+SELECT
+    channel_id,
+    channel_name,
+    duration_category,
+    COUNT(video_id) AS total_videos,
+    SUM(view_count) AS total_views,
+    SUM(like_count) AS total_likes,
+    SUM(comment_count) AS total_comments,
+    AVG(view_count) AS avg_views_per_video,
+    AVG(like_count) AS avg_likes_per_video,
+    AVG(comment_count) AS avg_comments_per_video
+FROM categorized_videos
+GROUP BY channel_id, channel_name, duration_category
+ORDER BY channel_name, duration_category
+
+---
+
+# Average Monthly Revenue (MiawAug)
+WITH monthly_revenue AS (
+    SELECT
+        f.channel_id,
+        k.channel_name,
+        DATE_TRUNC(d.date, MONTH) AS month,
+        SUM(f.view_count) AS total_monthly_views
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    JOIN youtube_tf_marts.channel k ON f.channel_id = k.channel_id
+    WHERE d.date >= '2019-01-01' AND d.date < DATE_TRUNC(CURRENT_DATE(), MONTH)  -- Exclude the current month
+    AND f.channel_id = 'UC3J4Q1grz46bdJ7NJLd4DGw'
+    GROUP BY f.channel_id, k.channel_name, DATE_TRUNC(d.date, MONTH)
+),
+
+revenue_calculation AS (
+    SELECT
+        channel_id,
+        channel_name,
+        month,
+        total_monthly_views,
+        1.2 AS CPM,  -- Replace with actual CPM value
+        ((total_monthly_views * 1.2) / 1000) * 16500 AS monthly_revenue  -- Calculate revenue based on CPM
+    FROM monthly_revenue
+)
+
+SELECT
+    channel_name,
+    AVG(monthly_revenue) AS avg_monthly_revenue
+FROM revenue_calculation
+GROUP BY channel_name
+ORDER BY channel_name;
+
+---
+
+# Average Monthly Revenue (Windah)
+WITH monthly_revenue AS (
+    SELECT
+        f.channel_id,
+        k.channel_name,
+        DATE_TRUNC(d.date, MONTH) AS month,
+        SUM(f.view_count) AS total_monthly_views
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    JOIN youtube_tf_marts.channel k ON f.channel_id = k.channel_id
+    WHERE d.date >= '2019-01-01' AND d.date < DATE_TRUNC(CURRENT_DATE(), MONTH)  -- Exclude the current month
+    AND f.channel_id = 'UCoIiiHof6BJ85PLuLkuxuhw'
+    GROUP BY f.channel_id, k.channel_name, DATE_TRUNC(d.date, MONTH)
+),
+
+revenue_calculation AS (
+    SELECT
+        channel_id,
+        channel_name,
+        month,
+        total_monthly_views,
+        1.2 AS CPM,  -- Replace with actual CPM value
+        ((total_monthly_views * 1.2) / 1000) * 16500 AS monthly_revenue  -- Calculate revenue based on CPM
+    FROM monthly_revenue
+)
+
+SELECT
+    channel_name,
+    AVG(monthly_revenue) AS avg_monthly_revenue
+FROM revenue_calculation
+GROUP BY channel_name
+ORDER BY channel_name;
+
+---
+
+# Average Video Duration in Minutes
+WITH channel_metrics AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        SUM(f.view_count) AS total_views,
+        SUM(f.like_count) AS total_likes,
+        SUM(f.comment_count) AS total_comments,
+        COUNT(f.video_id) AS total_videos,
+        AVG(dv.duration_seconds) / 60 AS avg_duration_minutes  -- Convert seconds to minutes
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.videos dv ON f.video_id = dv.video_id
+    GROUP BY c.channel_id, c.channel_name
+)
+
+SELECT * FROM channel_metrics
+
+---
+
+# Average Videos Per Months
+WITH video_monthly_counts AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        EXTRACT(YEAR FROM d.date) AS year,
+        EXTRACT(MONTH FROM d.date) AS month,
+        COUNT(f.video_id) AS videos_per_month
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    GROUP BY c.channel_id, c.channel_name, year, month
+),
+
+average_videos_per_month AS (
+    SELECT
+        channel_id,
+        channel_name,
+        AVG(videos_per_month) AS avg_videos_per_month
+    FROM video_monthly_counts
+    GROUP BY channel_id, channel_name
+)
+
+SELECT * 
+FROM average_videos_per_month
+ORDER BY avg_videos_per_month DESC;
+
+---
+
+# Average Views by Video Duration
+WITH categorized_videos AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        dv.video_id,
+        dv.video_title,
+        f.view_count,
+        f.like_count,
+        f.comment_count,
+        CASE
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 < 5 THEN 'Short'
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 BETWEEN 5 AND 20 THEN 'Medium'
+            ELSE 'Long'
+        END AS duration_category
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.videos dv ON f.video_id = dv.video_id
+)
+
+SELECT
+    channel_id,
+    channel_name,
+    duration_category,
+    COUNT(video_id) AS total_videos,
+    SUM(view_count) AS total_views,
+    SUM(like_count) AS total_likes,
+    SUM(comment_count) AS total_comments,
+    AVG(view_count) AS avg_views_per_video,
+    AVG(like_count) AS avg_likes_per_video,
+    AVG(comment_count) AS avg_comments_per_video
+FROM categorized_videos
+GROUP BY channel_id, channel_name, duration_category
+ORDER BY channel_name, duration_category
+
+---
+
+# Average Views Per Videos
+WITH categorized_videos AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        dv.video_id,
+        dv.video_title,
+        f.view_count,
+        f.like_count,
+        f.comment_count,
+        CASE
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 < 5 THEN 'Short'
+            WHEN SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 BETWEEN 5 AND 20 THEN 'Medium'
+            ELSE 'Long'
+        END AS duration_category
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.videos dv ON f.video_id = dv.video_id
+)
+
+SELECT
+    channel_id,
+    channel_name,
+    duration_category,
+    COUNT(video_id) AS total_videos,
+    SUM(view_count) AS total_views,
+    SUM(like_count) AS total_likes,
+    SUM(comment_count) AS total_comments,
+    AVG(view_count) AS avg_views_per_video,
+    AVG(like_count) AS avg_likes_per_video,
+    AVG(comment_count) AS avg_comments_per_video
+FROM categorized_videos
+GROUP BY channel_id, channel_name, duration_category
+ORDER BY channel_name, duration_category
+
+---
+
+# Estimated Monthly Revenue (MiawAug)
+WITH monthly_views AS (
+    SELECT
+        f.channel_id,
+        DATE_TRUNC(d.date, MONTH) AS month,  -- Aggregate by month with a date format
+        SUM(f.view_count) AS total_monthly_views
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    WHERE f.channel_id = 'UC3J4Q1grz46bdJ7NJLd4DGw'
+    AND d.date >= '2019-01-01'  -- Include data from January 1, 2019 onward
+    AND DATE_TRUNC(d.date, MONTH) < DATE_TRUNC(CURRENT_DATE(), MONTH)  -- Exclude the current month
+    GROUP BY f.channel_id, DATE_TRUNC(d.date, MONTH)
+)
+
+SELECT
+    channel_id,
+    month,
+    total_monthly_views,
+    1.2 AS CPM,  -- replace with your actual CPM value
+    ((total_monthly_views * 1.2) / 1000) * 16500 AS estimated_monthly_revenue
+FROM monthly_views
+ORDER BY month, channel_id;
+
+---
+
+# Estimated Monthly Revenue (Windah)
+WITH monthly_views AS (
+    SELECT
+        f.channel_id,
+        DATE_TRUNC(d.date, MONTH) AS month,  -- Aggregate by month with a date format
+        SUM(f.view_count) AS total_monthly_views
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    WHERE f.channel_id = 'UCoIiiHof6BJ85PLuLkuxuhw'
+    AND d.date >= '2019-01-01'  -- Include data from January 1, 2019 onward
+    AND DATE_TRUNC(d.date, MONTH) < DATE_TRUNC(CURRENT_DATE(), MONTH)  -- Exclude the current month
+    GROUP BY f.channel_id, DATE_TRUNC(d.date, MONTH)
+)
+
+SELECT
+    channel_id,
+    month,
+    total_monthly_views,
+    1.2 AS CPM,  -- replace with your actual CPM value
+    ((total_monthly_views * 1.2) / 1000) * 16500 AS estimated_monthly_revenue
+FROM monthly_views
+ORDER BY month, channel_id;
+
+---
+
+# Estimated Yearly Revenue (MiawAug)
+WITH monthly_views AS (
+    SELECT
+        f.channel_id,
+        DATE_TRUNC(d.date, MONTH) AS month,  -- Aggregate by month with a date format
+        SUM(f.view_count) AS total_monthly_views
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    WHERE f.channel_id = 'UC3J4Q1grz46bdJ7NJLd4DGw'
+    AND d.date >= '2019-01-01'  -- Include data from January 1, 2019 onward
+    AND DATE_TRUNC(d.date, MONTH) < DATE_TRUNC(CURRENT_DATE(), MONTH)  -- Exclude the current month
+    GROUP BY f.channel_id, DATE_TRUNC(d.date, MONTH)
+)
+
+SELECT
+    channel_id,
+    EXTRACT(YEAR FROM month) AS year,  -- Extract the year from the month
+    SUM(total_monthly_views) AS total_yearly_views,
+    1.2 AS CPM,  -- replace with your actual CPM value
+    ((SUM(total_monthly_views) * 1.2) / 1000) * 16500 AS estimated_yearly_revenue
+FROM monthly_views
+GROUP BY channel_id, EXTRACT(YEAR FROM month)
+ORDER BY year, channel_id;
+
+---
+
+# Estimated Yearly Revenue (Windah)
+WITH monthly_views AS (
+    SELECT
+        f.channel_id,
+        DATE_TRUNC(d.date, MONTH) AS month,  -- Aggregate by month with a date format
+        SUM(f.view_count) AS total_monthly_views
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    WHERE f.channel_id = 'UCoIiiHof6BJ85PLuLkuxuhw'
+    AND d.date >= '2019-01-01'  -- Include data from January 1, 2019 onward
+    AND DATE_TRUNC(d.date, MONTH) < DATE_TRUNC(CURRENT_DATE(), MONTH)  -- Exclude the current month
+    GROUP BY f.channel_id, DATE_TRUNC(d.date, MONTH)
+)
+
+SELECT
+    channel_id,
+    EXTRACT(YEAR FROM month) AS year,  -- Extract the year from the month
+    SUM(total_monthly_views) AS total_yearly_views,
+    1.2 AS CPM,  -- replace with your actual CPM value
+    ((SUM(total_monthly_views) * 1.2) / 1000) * 16500 AS estimated_yearly_revenue
+FROM monthly_views
+GROUP BY channel_id, EXTRACT(YEAR FROM month)
+ORDER BY year, channel_id;
+
+---
+
+# Highest Engagement Rates
+WITH engagement_metrics AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        f.video_id,
+        f.view_count,
+        f.like_count,
+        f.comment_count,
+        CASE 
+            WHEN f.view_count > 0 THEN (f.like_count + f.comment_count) / f.view_count
+            ELSE 0  -- Handle videos with zero views to avoid division by zero
+        END AS engagement_rate
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+),
+
+highest_engagement_by_channel AS (
+    SELECT
+        channel_id,
+        channel_name,
+        MAX(engagement_rate) AS highest_engagement_rate
+    FROM engagement_metrics
+    GROUP BY channel_id, channel_name
+)
+
+SELECT *
+FROM highest_engagement_by_channel
+ORDER BY highest_engagement_rate DESC;
+
+---
+
+# Monthly Engagement By Channels
+WITH monthly_data AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        DATE_TRUNC(d.date, MONTH) AS month,  -- Adjust to WEEK for weekly trends
+        SUM(f.view_count) AS total_monthly_views,
+        SUM(f.like_count) AS total_monthly_likes,
+        SUM(f.comment_count) AS total_monthly_comments
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    WHERE d.date >= '2019-01-01'  -- Filters data from January 1, 2019, onward
+    GROUP BY c.channel_id, c.channel_name, month
+),
+
+monthly_engagement_rate AS (
+    SELECT
+        channel_name,
+        month,
+        CASE 
+            WHEN total_monthly_views > 0 THEN (total_monthly_likes + total_monthly_comments) / total_monthly_views
+            ELSE 0  -- Handle cases where total views are zero
+        END AS engagement_rate_by_views
+    FROM monthly_data
+)
+
+SELECT *
+FROM monthly_engagement_rate
+ORDER BY month, channel_name
+
+---
+
+# Monthly Views By Channels
+WITH monthly_views AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        DATE_TRUNC(d.date, MONTH) AS month,  -- Aggregates data by month
+        SUM(f.view_count) AS total_monthly_views
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.date d ON f.date_id = d.date_id
+    WHERE d.date >= '2019-01-01'  -- Filters data from January 1, 2019, onward
+    GROUP BY c.channel_id, c.channel_name, month
+)
+
+SELECT 
+    channel_name,
+    month,
+    total_monthly_views
+FROM monthly_views
+ORDER BY month, channel_name;
+
+---
+
+# Top 3 Most Engaging Videos (MiawAug)
+WITH video_engagement AS (
+    SELECT
+        v.video_id,
+        v.video_title,
+        c.channel_name,
+        SAFE_DIVIDE((f.like_count + f.comment_count), NULLIF(f.view_count, 0)) AS engagement_rate,
+        f.view_count,
+        f.like_count,
+        f.comment_count
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.videos v ON f.video_id = v.video_id
+)
+
+, ranked_videos AS (
+    SELECT
+        video_id,
+        video_title,
+        channel_name,
+        engagement_rate,
+        view_count,
+        like_count,
+        comment_count,
+        ROW_NUMBER() OVER (PARTITION BY channel_name ORDER BY engagement_rate DESC) AS rank
+    FROM video_engagement
+)
+
+SELECT 
+    channel_name,
+    video_title,
+    engagement_rate,
+    view_count,
+    like_count,
+    comment_count
+FROM ranked_videos
+WHERE rank <= 3
+AND channel_name = 'MiawAug'
+ORDER BY channel_name, engagement_rate DESC;
+
+---
+
+# Top 3 Most Viewed Videos (Windah Basudara)
+WITH video_ranking AS (
+    SELECT
+        c.channel_name,
+        dv.video_id,
+        dv.video_title,
+        f.view_count,
+        SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 AS duration_minutes,
+        ROW_NUMBER() OVER (PARTITION BY c.channel_name ORDER BY f.view_count DESC) AS video_rank
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    JOIN youtube_tf_marts.videos dv ON f.video_id = dv.video_id
+    WHERE SAFE_CAST(dv.duration_seconds AS FLOAT64) / 60 > 1  -- Filter for videos longer than 1 minute
+)
+
+SELECT 
+    channel_name,
+    video_title,
+    view_count,
+    duration_minutes
+FROM video_ranking
+WHERE video_rank <= 3
+AND channel_name = 'Windah Basudara'
+ORDER BY channel_name, view_count DESC;
+
+---
+
+# Total Subscribers vs Total Views
+WITH metrics_summary AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        c.total_subscribers,      	-- Adding total_subscribers from dim_channel
+        c.total_videos,             	-- Adding total_videos from dim_channel
+        SUM(f.view_count) AS total_views,
+        SUM(f.like_count) AS total_likes,
+        SUM(f.comment_count) AS total_comments
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    GROUP BY c.channel_id, c.channel_name, c.total_videos, c.total_subscribers
+)
+
+SELECT *
+FROM metrics_summary
+ORDER BY total_views DESC;
+
+---
+
+# Views to Subcriber Ratio by Channel
+WITH channel_views AS (
+    SELECT
+        c.channel_id,
+        c.channel_name,
+        SUM(f.view_count) AS total_views,
+        c.total_subscribers
+    FROM youtube_tf_marts.metrics f
+    JOIN youtube_tf_marts.channel c ON f.channel_id = c.channel_id
+    GROUP BY c.channel_id, c.channel_name, c.total_subscribers
+)
+
+SELECT
+    channel_id,
+    channel_name,
+    total_views,
+    total_subscribers,
+    CASE 
+        WHEN total_subscribers = 0 THEN NULL  -- Handle division by zero
+        ELSE ROUND((total_views / total_subscribers), 1)
+    END AS views_to_subs_ratio
+FROM channel_views
+ORDER BY views_to_subs_ratio DESC;
